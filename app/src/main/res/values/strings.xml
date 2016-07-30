@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">SimpleChatApp</string>
+    <string name="title_activity_login">SimpleChatApp</string>
+
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="log_in">Log in</string>
+    <string name="or">Or</string>
+    <string name="sign_up">Sign up</string>
+
+    <string name="send">Send</string>
+    <string name="sign_out">Sign out</string>
+
+    <string name="oauth_ID">747593131617-a2d6nvhn0utsd2mfdp6975susba245r7.apps.googleusercontent.com</string>
+</resources>
