@@ -65,7 +65,7 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="7dp"
+        android:layout_height="1dp"
         android:background="@android:color/white"
         app:layout_constraintLeft_toLeftOf="@+id/constraintLayout"
         android:layout_marginStart="64dp"

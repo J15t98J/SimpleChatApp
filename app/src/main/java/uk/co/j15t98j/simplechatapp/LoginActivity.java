@@ -25,8 +25,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private FirebaseUser user;
-
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authListener;
 
@@ -48,8 +46,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if(user != null) {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    finish();
                 }
             }
         };
@@ -129,23 +127,25 @@ public class LoginActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 4857) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if(result.isSuccess()) {
-                GoogleSignInAccount account = result.getSignInAccount();
-                if(account != null) {
-                    AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-                    auth.signInWithCredential(credential)
-                            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (!task.isSuccessful()) {
-                                        Toast.makeText(LoginActivity.this, "Log in failed", Toast.LENGTH_SHORT).show();
+        switch(requestCode) {
+            case 4857: // Google sign-in activity
+                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                if(result.isSuccess()) {
+                    GoogleSignInAccount account = result.getSignInAccount();
+                    if(account != null) {
+                        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+                        auth.signInWithCredential(credential)
+                                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if (!task.isSuccessful()) {
+                                            Toast.makeText(LoginActivity.this, "Log in failed", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                }
-                            });
+                                });
+                    }
                 }
-            }
+                break;
         }
     }
 }
