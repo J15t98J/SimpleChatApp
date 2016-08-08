@@ -2,20 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="40dp"
+    android:layout_marginStart="40dp"
+    android:layout_marginEnd="16dp"
     android:layout_marginTop="16dp"
     android:layout_marginBottom="16dp"
     android:orientation="horizontal">
-
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_height="48dp"
-        android:layout_width="48dp"
-        android:layout_marginEnd="16dp"
-        android:layout_gravity="bottom"
-        app:civ_border_width="2dp"
-        app:civ_border_color="@color/colorPrimary"
-        android:src="@color/colorPrimary" />
 
     <TextView
         android:id="@+id/message_content"
@@ -26,6 +17,16 @@
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
         android:paddingBottom="24dp"
-        android:background="@drawable/bubble_left"
+        android:background="@drawable/bubble_right"
         android:textSize="16sp" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_height="48dp"
+        android:layout_width="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_gravity="bottom"
+        app:civ_border_width="2dp"
+        app:civ_border_color="@color/colorPrimary"
+        android:src="@color/colorPrimary" />
+
 </LinearLayout>

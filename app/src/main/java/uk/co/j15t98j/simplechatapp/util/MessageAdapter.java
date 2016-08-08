@@ -7,12 +7,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.HashMap;
 import java.util.List;
 
 import uk.co.j15t98j.simplechatapp.R;
 
-public class MessageAdapter extends RecyclerView.Adapter {
+public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
     private List<Message> data;
 
@@ -20,7 +19,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
         this.data = data;
     }
 
-    private static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
         LinearLayout item;
         TextView contentView;
 
@@ -32,19 +31,24 @@ public class MessageAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_left, parent, false);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate((viewType == 1? R.layout.message_right : R.layout.message_left), parent, false);
         return new ViewHolder((LinearLayout)v);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         Message message = data.get(position);
-        ((ViewHolder)holder).contentView.setText(message.getContent());
+        holder.contentView.setText(message.getContent());
     }
 
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return data.get(position).getType() == MessageType.SENT? 1 : 0;
     }
 }

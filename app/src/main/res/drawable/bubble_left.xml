@@ -4,12 +4,15 @@
     <item android:bottom="20dp">
         <shape android:shape="rectangle" >
             <solid android:color="#CCC" />
-            <corners android:radius="5dp" />
+            <!--corners android:radius="5dp" /-->
         </shape>
     </item>
 
-    <item android:bottom="24dp">
-        <rotate android:fromDegrees="55" android:toDegrees="0">
+    <item>
+        <rotate android:fromDegrees="-55" android:toDegrees="0"
+                android:pivotX="0%"
+                android:pivotY="100%">
+
             <shape android:shape="rectangle">
                 <solid android:color="#CCC" />
                 <corners android:radius="5dp" />
