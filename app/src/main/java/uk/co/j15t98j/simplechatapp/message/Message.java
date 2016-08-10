@@ -1,13 +1,9 @@
-package uk.co.j15t98j.simplechatapp.util;
+package uk.co.j15t98j.simplechatapp.message;
 
 import android.support.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Objects;
 
 import uk.co.j15t98j.simplechatapp.MainActivity;
@@ -32,6 +28,10 @@ public class Message {
         content = snapshot.child("content").getValue().toString();
         timestamp = (Long)snapshot.child("timestamp").getValue();
         type = Objects.equals(author, MainActivity.author)? MessageType.SENT : MessageType.RECEIVED;
+    }
+
+    String getAuthor() {
+        return author;
     }
 
     String getContent() {

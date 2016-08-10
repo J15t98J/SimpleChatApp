@@ -21,12 +21,13 @@
         android:textSize="16sp" />
 
     <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/message_picture"
         android:layout_height="48dp"
         android:layout_width="48dp"
         android:layout_marginStart="16dp"
         android:layout_gravity="bottom"
-        app:civ_border_width="2dp"
+        app:civ_border_width="4dp"
         app:civ_border_color="@color/colorPrimary"
-        android:src="@color/colorPrimary" />
+        android:src="@color/colorAccent" />
 
 </LinearLayout>
