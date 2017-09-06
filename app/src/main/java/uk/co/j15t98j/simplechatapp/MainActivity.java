@@ -3,7 +3,6 @@ package uk.co.j15t98j.simplechatapp;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,12 +40,15 @@ import uk.co.j15t98j.simplechatapp.message.MessageComparator;
 
 public class MainActivity extends AppCompatActivity {
 
+    private FirebaseDatabase database;
+
     private RecyclerView list;
     private MessageAdapter adapter;
     private List<Message> data;
 
     public static File cacheDir;
     public static StorageReference pictures;
+    public static DatabaseReference pictures_notify;
 
     public static final String author = "Me";
 
@@ -59,9 +61,14 @@ public class MainActivity extends AppCompatActivity {
         list.setLayoutManager(new LinearLayoutManager(this));
         list.setAdapter((adapter = new MessageAdapter((data = new ArrayList<>()))));
 
+        list.setItemViewCacheSize(30);
+        list.setDrawingCacheEnabled(true);
+
         //region Messages
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        database.setPersistenceEnabled(true);
+        if(database == null) {
+            database = FirebaseDatabase.getInstance();
+            database.setPersistenceEnabled(true);
+        }
         final DatabaseReference messages = database.getReference("message");
         messages.keepSynced(true);
 
@@ -116,6 +123,34 @@ public class MainActivity extends AppCompatActivity {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         cacheDir = this.getCacheDir();
         pictures = storage.getReferenceFromUrl("gs://simplechatapp-fd321.appspot.com");
+
+        pictures_notify = database.getReference("picture");
+        pictures_notify.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                onChildChanged(dataSnapshot, s);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         //endregion
     }
 
@@ -166,7 +201,8 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     Uri resultUri = result.getUri();
                     pictures.child(author + ".png").putFile(resultUri);
-                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                    pictures_notify.child(author).setValue(new Date().getTime());
+                } else if(resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
 
                 }
 
