@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -20,12 +21,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -40,7 +43,7 @@ import uk.co.j15t98j.simplechatapp.message.MessageComparator;
 
 public class MainActivity extends AppCompatActivity {
 
-    private FirebaseDatabase database;
+    private static FirebaseDatabase database;
 
     private RecyclerView list;
     private MessageAdapter adapter;
@@ -50,11 +53,12 @@ public class MainActivity extends AppCompatActivity {
     public static StorageReference pictures;
     public static DatabaseReference pictures_notify;
 
-    public static final String author = "Me";
+    public static String author;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        author = getIntent().getExtras().getString("authUID");
         setContentView(getLayoutInflater().inflate(R.layout.activity_main, null));
 
         list = (RecyclerView) findViewById(R.id.recyclerView);
@@ -133,7 +137,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                adapter.notifyDataSetChanged();
+                if(dataSnapshot.getValue() != adapter.ppic_changeNumbers.get("profile_" + dataSnapshot.getKey())) {
+                    adapter.ppics.remove("profile_" + dataSnapshot.getKey());
+                    adapter.ppic_changeNumbers.put("profile_" + dataSnapshot.getKey(), (Long)dataSnapshot.getValue());
+                    new File(MainActivity.cacheDir, "profile_" + dataSnapshot.getKey()).delete();
+                    adapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -162,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_change_picture:
-                new PictureOptions().show(getFragmentManager(), "");
+                new PictureOptions().show(getFragmentManager(), "picture_change");
                 return true;
 
             case R.id.action_sign_out:
@@ -178,35 +187,36 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Uri uri = null;
-        switch(requestCode) {
-            case 1:
-                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                File file = new File(this.getCacheDir(), "profile_" + author);
-                try {
-                    FileOutputStream stream = new FileOutputStream(file);
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                } catch (FileNotFoundException | NullPointerException e) {
-                    e.printStackTrace();
-                }
-                uri = Uri.fromFile(file);
+        if(resultCode == RESULT_OK) {
+            Uri uri = null;
+            switch (requestCode) {
+                case 1:
+                    Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                    File file = new File(this.getCacheDir(), "profile_" + author);
+                    try {
+                        FileOutputStream stream = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    } catch (FileNotFoundException | NullPointerException e) {
+                        e.printStackTrace();
+                    }
+                    uri = Uri.fromFile(file);
 
-            case 2:
-                uri = (uri == null)? data.getData() : uri;
-                CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1, 1).setFixAspectRatio(true).setCropShape(CropImageView.CropShape.OVAL).start(this);
-                break;
+                case 2:
+                    uri = (uri == null) ? data.getData() : uri;
+                    CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1, 1).setFixAspectRatio(true).setCropShape(CropImageView.CropShape.OVAL).start(this);
+                    break;
 
-            case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
-                CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                if (resultCode == RESULT_OK) {
-                    Uri resultUri = result.getUri();
-                    pictures.child(author + ".png").putFile(resultUri);
-                    pictures_notify.child(author).setValue(new Date().getTime());
-                } else if(resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-
-                }
-
-                break;
+                case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                        Uri resultUri = result.getUri();
+                        pictures.child(author).putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                pictures_notify.child(author).setValue(new Date().getTime());
+                            }
+                        });
+                    break;
+            }
         }
     }
 }

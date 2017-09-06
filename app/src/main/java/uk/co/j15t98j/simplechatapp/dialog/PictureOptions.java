@@ -14,7 +14,7 @@ public class PictureOptions extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity(), R.style.AppTheme);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
         dialog.setTitle("Change profile picture")
                 .setItems(R.array.picture_options, new DialogInterface.OnClickListener() {
                     @Override
