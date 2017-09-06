@@ -28,7 +28,6 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -108,7 +107,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                data.remove(new Message(dataSnapshot));
+                for (Message currentMessage : data) {
+                    if (currentMessage.equals(new Message(dataSnapshot))) {
+                        data.remove(currentMessage);
+                        break;
+                    }
+                }
+                adapter.notifyDataSetChanged();
             }
 
             @Override

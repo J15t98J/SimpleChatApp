@@ -9,7 +9,7 @@ import java.util.Objects;
 import uk.co.j15t98j.simplechatapp.MainActivity;
 
 public class Message {
-    private String ID;
+
     private String author;
     private String content;
     private Long timestamp;
@@ -23,7 +23,7 @@ public class Message {
     }
 
     public Message(@NonNull DataSnapshot snapshot) {
-        ID = snapshot.getKey();
+        String ID = snapshot.getKey();
         author = snapshot.child("author").getValue().toString();
         content = snapshot.child("content").getValue().toString();
         timestamp = (Long)snapshot.child("timestamp").getValue();
@@ -44,5 +44,15 @@ public class Message {
 
     MessageType getType() {
         return type;
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        Message message = (Message)obj;
+        return obj.getClass().equals(Message.class)
+                && message.getAuthor().equals(author)
+                && message.getContent().equals(content)
+                && message.getTimestamp().equals(timestamp);
     }
 }
